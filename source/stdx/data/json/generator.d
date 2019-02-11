@@ -1,5 +1,5 @@
 /**
- * Contains routines for converting JSON values to their string represencation.
+ * Contains routines for converting JSON values to their string representation.
  *
  * Synopsis:
  * ---
