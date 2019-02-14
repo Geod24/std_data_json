@@ -869,7 +869,7 @@ void skipValue(R)(ref R nodes) if (isJSONParserNodeInputRange!R)
 
     assert(j.front.kind == JSONParserNodeKind.arrayStart);
     j.popFront();
-    
+
     // skips the whole [1, 2, 3] array
     j.skipValue();
 
