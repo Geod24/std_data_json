@@ -619,7 +619,8 @@ struct JSONParserRange(Input)
         switch (_input.front.kind)
         {
             default:
-                throw new JSONException("Expected JSON value", _input.location);
+                enforceJson(false, "Expected JSON value", _input.location);
+                assert(0);
             case JSONTokenKind.none: assert(false);
             case JSONTokenKind.null_, JSONTokenKind.boolean,
                     JSONTokenKind.number, JSONTokenKind.string:
