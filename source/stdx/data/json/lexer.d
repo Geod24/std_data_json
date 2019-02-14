@@ -337,7 +337,7 @@ struct JSONLexerRange(Input, LexOptions options = LexOptions.init, String = stri
     private void skipKeyword(string kw)
     {
         import std.algorithm : skipOver;
-        if (!_input.skipOver(kw)) setError("Invalid keyord");
+        if (!_input.skipOver(kw)) setError("Invalid keyword");
         else static if (!(options & LexOptions.noTrackLocation)) _loc.column += kw.length;
     }
 
