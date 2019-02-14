@@ -50,6 +50,7 @@ public import stdx.data.json.generator;
 public import stdx.data.json.lexer;
 public import stdx.data.json.parser;
 public import stdx.data.json.value;
+public import stdx.data.json.utils;
 
 
 version (unittest)
