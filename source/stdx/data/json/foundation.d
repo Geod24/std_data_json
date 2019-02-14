@@ -7,7 +7,8 @@
  * Source:    $(PHOBOSSRC std/data/json/foundation.d)
  */
 module stdx.data.json.foundation;
-@safe:
+
+import std.format;
 
 import stdx.data.json.lexer;
 
@@ -27,7 +28,7 @@ struct Location
     size_t column = 0;
 
     /// Returns a string representation of the location.
-    string toString() const
+    string toString() const @safe
     {
         import std.string;
         return format("%s(%s:%s)", this.file, this.line, this.column);
@@ -42,24 +43,55 @@ struct Location
 */
 class JSONException : Exception
 {
-    /// The bare error message
-    string message;
-
     /// The location where the error occured
     Location location;
 
-    /// Constructs a new exception from the given message and location
-    this(string message, Location loc, string file = __FILE__, size_t line = __LINE__)
+    /// Constructs a new empty exception
+    private this() @safe
     {
-        import std.string;
-        this.message = message;
-        this.location = loc;
-        super(format("%s(%s:%s) %s", loc.file, loc.line, loc.column, message), file, line);
+        super(string.init, string.init, 0);
+    }
+
+    /// Writes to the sink, avoid GC allocations when possible
+    override void toString(scope void delegate(scope const(char)[]) sink) const
+    {
+        formattedWrite(sink, "%s(%s:%s) %s", this.location.file,
+                       this.location.line, this.location.column, this.msg);
+        // Print stack trace
+        if (info)
+        {
+            try
+            {
+                sink("\n----------------");
+                foreach (t; info)
+                {
+                    sink("\n"); sink(t);
+                }
+            }
+            catch (Throwable)
+            {
+                // ignore more errors
+            }
+        }
     }
 }
 
-package void enforceJson(bool cond, lazy string message, lazy Location loc,
-                         string file = __FILE__, size_t line = __LINE__)
+private struct Static (Exc : Exception)
 {
-    if (!cond) throw new JSONException(message, loc, file, line);
+    Exc value = new Exc();
+    alias value this;
+}
+
+package void enforceJson(bool cond, string message, Location loc,
+    string file = __FILE__, size_t line = __LINE__) @nogc @safe
+{
+    static Static!JSONException exc;
+    if (!cond)
+    {
+        exc.msg = message;
+        exc.file = file;
+        exc.line = line;
+        exc.location = loc;
+        throw exc.value;
+    }
 }
