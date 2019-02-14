@@ -58,8 +58,8 @@ class JSONException : Exception
     }
 }
 
-package void enforceJson(string file = __FILE__, size_t line = __LINE__)(bool cond, lazy string message, lazy Location loc)
+package void enforceJson(bool cond, lazy string message, lazy Location loc,
+                         string file = __FILE__, size_t line = __LINE__)
 {
     if (!cond) throw new JSONException(message, loc, file, line);
 }
-
